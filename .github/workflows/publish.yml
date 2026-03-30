@@ -13,6 +13,7 @@ jobs:
       url: https://pypi.org/p/kirkaio
     permissions:
       id-token: write  # Mandatory for Trusted Publishing
+      contents: read   # Necessary for actions/checkout to work!
 
     steps:
     - uses: actions/checkout@v4
