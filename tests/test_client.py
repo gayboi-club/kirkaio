@@ -2,7 +2,7 @@ import pytest
 import asyncio
 import aiohttp
 from aioresponses import aioresponses
-from kirkapy import KirkaClient, RateLimitError, AuthenticationError, ValidationError, RouteDisabledError, ServerError
+from kirkaio import KirkaClient, RateLimitError, AuthenticationError, ValidationError, RouteDisabledError, ServerError
 
 BASE = "https://api.kirka.io"
 

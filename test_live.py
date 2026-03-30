@@ -1,7 +1,7 @@
 import asyncio
 import os
 from dotenv import load_dotenv
-from kirkapy import KirkaClient, NotFoundError
+from kirkaio import KirkaClient, NotFoundError
 
 async def test_live():
     load_dotenv()

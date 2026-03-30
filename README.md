@@ -1,17 +1,17 @@
-# kirkapy
+# kirkaio
 
 Async Python client for the [Kirka](https://kirka.io) Public API.
 
 Made by fags inc. for the kirka.io community :3
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/fags-inc/kirkapy/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/fags-inc/kirkaio/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://pyproject.toml)
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/fags-inc/kirkapy/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/fags-inc/kirkaio/releases)
 
 ## Installation
 
 ```bash
-pip install kirkapy
+pip install kirkaio
 ```
 
 Requires Python 3.11+.
@@ -20,7 +20,7 @@ Requires Python 3.11+.
 
 ```python
 import asyncio
-from kirkapy import KirkaClient
+from kirkaio import KirkaClient
 
 async def main():
     async with KirkaClient("YOUR_API_KEY") as client:
@@ -73,17 +73,17 @@ KirkaClient(
 
 ```bash
 # Player profile
-kirkapy user AWSOME
+kirkaio user AWSOME
 
 # Clan details
-kirkapy clan awesomesam
+kirkaio clan awesomesam
 
 # Leaderboards: solo | clan | sad | 1v1 | 2v2
-kirkapy leaderboard solo
+kirkaio leaderboard solo
 
 # Active quests
-kirkapy quests
-kirkapy quests --type event
+kirkaio quests
+kirkaio quests --type event
 ```
 
 ## Available Methods :3
@@ -104,7 +104,7 @@ kirkapy quests --type event
 ## Error Handling
 
 ```python
-from kirkapy import KirkaClient, NotFoundError, RateLimitError, AuthenticationError
+from kirkaio import KirkaClient, NotFoundError, RateLimitError, AuthenticationError
 
 async with KirkaClient("...") as client:
     try:

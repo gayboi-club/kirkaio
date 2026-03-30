@@ -1,5 +1,5 @@
 class KirkaError(Exception):
-    """Base exception for all kirkapy errors."""
+    """Base exception for all kirkaio errors."""
     pass
 
 

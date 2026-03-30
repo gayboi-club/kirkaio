@@ -1,5 +1,5 @@
 """
-kirkapy — async Python client for the Kirka Public API.
+kirkaio - async Python client for the Kirka Public API.
 """
 
 from .client import KirkaClient

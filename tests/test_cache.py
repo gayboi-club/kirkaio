@@ -1,6 +1,6 @@
 import asyncio
 import pytest
-from kirkapy.cache import Cache
+from kirkaio.cache import Cache
 
 @pytest.mark.asyncio
 async def test_cache_set_get():

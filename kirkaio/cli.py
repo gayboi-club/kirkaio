@@ -1,11 +1,11 @@
 """
-kirkapy CLI — quick lookups from your terminal.
+kirkaio CLI - quick lookups from your terminal.
 
 Usage:
-    kirkapy user <id> [--uuid]
-    kirkapy clan <name>
-    kirkapy leaderboard solo|clan|sad|1v1|2v2
-    kirkapy quests [--type <type>]
+    kirkaio user <id> [--uuid]
+    kirkaio clan <name>
+    kirkaio leaderboard solo|clan|sad|1v1|2v2
+    kirkaio quests [--type <type>]
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def _fmt_kv(label: str, value: object, width: int = 22) -> str:
 # ─── Subcommand handlers ──────────────────────────────────────────────────────
 
 async def cmd_user(args: argparse.Namespace) -> None:
-    from kirkapy import KirkaClient
+    from kirkaio import KirkaClient
 
     async with KirkaClient(_get_api_key()) as client:
         user = await client.get_user(args.id, is_short_id=not args.uuid)
@@ -59,7 +59,7 @@ async def cmd_user(args: argparse.Namespace) -> None:
 
 
 async def cmd_clan(args: argparse.Namespace) -> None:
-    from kirkapy import KirkaClient
+    from kirkaio import KirkaClient
 
     async with KirkaClient(_get_api_key()) as client:
         clan = await client.get_clan(args.name)
@@ -84,7 +84,7 @@ async def cmd_clan(args: argparse.Namespace) -> None:
 
 
 async def cmd_leaderboard(args: argparse.Namespace) -> None:
-    from kirkapy import KirkaClient
+    from kirkaio import KirkaClient
 
     lb_map = {
         "solo": "get_solo_leaderboard",
@@ -112,7 +112,7 @@ async def cmd_leaderboard(args: argparse.Namespace) -> None:
 
 
 async def cmd_quests(args: argparse.Namespace) -> None:
-    from kirkapy import KirkaClient
+    from kirkaio import KirkaClient
 
     async with KirkaClient(_get_api_key()) as client:
         quests = await client.get_quests(type=args.type)
@@ -140,7 +140,7 @@ async def run_cli(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="kirkapy",
+        prog="kirkaio",
         description="CLI tool for the Kirka Public API.",
         epilog="Set KIRKA_API_KEY environment variable to authenticate.",
     )

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import pytest
-from kirkapy.models import User, UserStats, Clan, ClanMember, Quest, InventoryItem, PublicItem
+from kirkaio.models import User, UserStats, Clan, ClanMember, Quest, InventoryItem, PublicItem
 
 def test_user_stats_properties():
     stats = UserStats(games=100, wins=50, kills=200, deaths=100, headshots=50, scores=1000)

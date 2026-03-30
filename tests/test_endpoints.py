@@ -1,12 +1,12 @@
 """
-Tests for kirkapy — uses aioresponses to mock HTTP calls.
+Tests for kirkaio — uses aioresponses to mock HTTP calls.
 Run with: pytest tests/
 """
 
 import pytest
 from aioresponses import aioresponses
-from kirkapy import KirkaClient, NotFoundError, AuthenticationError, RateLimitError
-from kirkapy.models import User, Clan, Quest, Leaderboard
+from kirkaio import KirkaClient, NotFoundError, AuthenticationError, RateLimitError
+from kirkaio.models import User, Clan, Quest, Leaderboard
 
 API_KEY = "test-key"
 BASE = "https://api.kirka.io"

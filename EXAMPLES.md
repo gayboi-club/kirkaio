@@ -1,6 +1,6 @@
-# kirkapy - Examples
+# kirkaio - Examples
 
-This file provides advanced examples for using `kirkapy` in common development scenarios.
+This file provides advanced examples for using `kirkaio` in common development scenarios.
 
 ---
 
@@ -10,7 +10,7 @@ A script to identify the most active members of a clan.
 
 ```python
 import asyncio
-from kirkapy import KirkaClient
+from kirkaio import KirkaClient
 
 async def monitor_clan(clan_name: str):
     async with KirkaClient("YOUR_API_KEY") as client:
@@ -35,7 +35,7 @@ Using the cache to minimize API calls for a periodic task.
 
 ```python
 import asyncio
-from kirkapy import KirkaClient
+from kirkaio import KirkaClient
 
 async def periodic_check():
     # Cache profiles for 1 hour
@@ -59,7 +59,7 @@ Aggregating all ranked leaderboards to find the best players across all modes.
 
 ```python
 import asyncio
-from kirkapy import KirkaClient
+from kirkaio import KirkaClient
 
 async def get_all_ranked():
     async with KirkaClient("YOUR_API_KEY") as client:
@@ -93,7 +93,7 @@ Handle specific cases like players that don't exist.
 
 ```python
 import asyncio
-from kirkapy import KirkaClient, NotFoundError
+from kirkaio import KirkaClient, NotFoundError
 
 async def lookup_safely(short_id: str):
     async with KirkaClient("YOUR_API_KEY") as client:

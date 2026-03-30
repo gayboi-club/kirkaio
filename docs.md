@@ -1,6 +1,6 @@
-# kirkapy - Library Handbook
+# kirkaio - Library Handbook
 
-Welcome to the `kirkapy` library handbook. This guide provides detailed information on how to use the library's classes, models, and methods to interact with the Kirka Public API.
+Welcome to the `kirkaio` library handbook. This guide provides detailed information on how to use the library's classes, models, and methods to interact with the Kirka Public API.
 
 ## Core Concepts
 
@@ -16,7 +16,7 @@ The central entry point for the library. It handles the underlying HTTP session,
 
 #### Usage
 ```python
-from kirkapy import KirkaClient
+from kirkaio import KirkaClient
 
 async with KirkaClient("YOUR_API_KEY") as client:
     # Use client here
@@ -60,7 +60,7 @@ A unified model for various rankings.
 
 ## Error Handling
 
-`kirkapy` defines several exceptions to help you handle failures graciously.
+`kirkaio` defines several exceptions to help you handle failures graciously.
 
 *   `KirkaError`: Generic base class for all library exceptions.
 *   `AuthenticationError`: Raised when the API key is missing or invalid (401).
@@ -90,11 +90,11 @@ await client.invalidate("user:AWSOME")
 
 ### Reusing a Session
 
-If you are using `kirkapy` inside another async application (like a Discord bot), you may want to share an `aiohttp.ClientSession`.
+If you are using `kirkaio` inside another async application (like a Discord bot), you may want to share an `aiohttp.ClientSession`.
 
 ```python
 import aiohttp
-from kirkapy import KirkaClient
+from kirkaio import KirkaClient
 
 async with aiohttp.ClientSession() as session:
     async with KirkaClient("...", session=session) as client:
@@ -107,7 +107,7 @@ async with aiohttp.ClientSession() as session:
 You can manually instantiate models if you have the raw data.
 
 ```python
-from kirkapy.models import User
+from kirkaio.models import User
 
 raw_data = { ... }
 user = User.from_dict(raw_data)
