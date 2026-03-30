@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kirkaio"
-version = "1.0.1"
+version = "1.0.2"
 description = "Async Python client for the Kirka Public API"
 readme = "README.md"
 authors = [

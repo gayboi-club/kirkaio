@@ -25,12 +25,12 @@ from kirkaio import KirkaClient
 async def main():
     async with KirkaClient("YOUR_API_KEY") as client:
         # Look up a player
-        user = await client.get_user("AWSOME")
+        user = await client.get_user("BOTTOM")
         print(f"{user.name} - Level {user.level}")
         print(f"K/D: {user.stats.kd_ratio}  Win Rate: {user.stats.win_rate}%")
 
         # Clan info
-        clan = await client.get_clan("awesomesam")
+        clan = await client.get_clan("Meowers")
         print(f"{clan.name} - War Position #{clan.current_war_position}")
 
         # Leaderboard
@@ -73,10 +73,10 @@ KirkaClient(
 
 ```bash
 # Player profile
-kirkaio user AWSOME
+kirkaio user BOTTOM
 
 # Clan details
-kirkaio clan awesomesam
+kirkaio clan Meowers
 
 # Leaderboards: solo | clan | sad | 1v1 | 2v2
 kirkaio leaderboard solo

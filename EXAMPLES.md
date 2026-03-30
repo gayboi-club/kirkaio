@@ -24,7 +24,7 @@ async def monitor_clan(clan_name: str):
         for m in top_members[:5]:
             print(f"{m.user_name} - {m.month_scores} monthly pts")
 
-asyncio.run(monitor_clan("awesomesam"))
+asyncio.run(monitor_clan("Meowers"))
 ```
 
 ---
@@ -42,7 +42,7 @@ async def periodic_check():
     async with KirkaClient("YOUR_API_KEY", cache_ttl=3600) as client:
         while True:
             # This will hit the network on the first run, and the cache on the next run
-            user = await client.get_user("AWSOME")
+            user = await client.get_user("BOTTOM")
             print(f"User level: {user.level}")
             
             # Wait for 10 minutes

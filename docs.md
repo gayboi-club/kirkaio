@@ -34,7 +34,7 @@ All API responses are parsed into Python dataclasses for typed access.
 Represents a public user profile.
 
 *   `id` (str): The persistent UUID of the player.
-*   `short_id` (str): The visible short ID (e.g. "AWSOME").
+*   `short_id` (str): The visible short ID (e.g. "BOTTOM").
 *   `name` (str): Display name.
 *   `level` (int): Player's level.
 *   `stats` (UserStats): Computed statistics (K/D, Win Rate, etc).
@@ -81,7 +81,7 @@ You can manually control the cache if needed.
 await client.clear_cache()
 
 # Invalidate a specific entry
-await client.invalidate("user:AWSOME")
+await client.invalidate("user:BOTTOM")
 ```
 
 ---

@@ -15,8 +15,8 @@ BASE = "https://api.kirka.io"
 
 USER_PAYLOAD = {
     "id": "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a",
-    "shortId": "AWSOME",
-    "name": "AwesomeSam",
+    "shortId": "BOTTOM",
+    "name": "BOTTOM",
     "bio": "Co-Developer",
     "role": "ADMIN",
     "klo": 1200.0,
@@ -31,7 +31,7 @@ USER_PAYLOAD = {
     "coins": 521690,
     "diamonds": 19255,
     "createdAt": "2021-07-25T06:48:42.617Z",
-    "clan": "awesomesam",
+    "clan": "Meowers",
     "activeWeapon1Skin": None,
     "activeBodySkin": None,
     "stats": {
@@ -46,7 +46,7 @@ USER_PAYLOAD = {
 
 CLAN_PAYLOAD = {
     "id": "c51c5633-1714-48aa-a0b3-94750e948844",
-    "name": "awesomesam",
+    "name": "Meowers",
     "description": "sam",
     "discordLink": None,
     "allScores": 0,
@@ -55,7 +55,7 @@ CLAN_PAYLOAD = {
     "createdAt": "2025-07-16T15:46:48.795Z",
     "members": [
         {
-            "user": {"id": "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a", "name": "AwesomeSam"},
+            "user": {"id": "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a", "name": "BOTTOM"},
             "role": "LEADER",
             "allScores": 0,
             "monthScores": 4210,
@@ -91,11 +91,11 @@ async def test_get_user_success():
     with aioresponses() as m:
         m.post(f"{BASE}/api/user/getProfile", payload=USER_PAYLOAD, status=201)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
-            user = await client.get_user("AWSOME")
+            user = await client.get_user("BOTTOM")
 
     assert isinstance(user, User)
-    assert user.name == "AwesomeSam"
-    assert user.short_id == "AWSOME"
+    assert user.name == "BOTTOM"
+    assert user.short_id == "BOTTOM"
     assert user.level == 25
     assert user.stats.kd_ratio == round(27864 / 19248, 2)
     assert user.stats.win_rate == round(838 / 1444 * 100, 1)
@@ -120,21 +120,21 @@ async def test_get_user_auth_error():
         )
         async with KirkaClient("bad-key", cache_ttl=0) as client:
             with pytest.raises(AuthenticationError):
-                await client.get_user("AWSOME")
+                await client.get_user("BOTTOM")
 
 
 @pytest.mark.asyncio
 async def test_get_clan():
     with aioresponses() as m:
-        m.get(f"{BASE}/api/clan/awesomesam", payload=CLAN_PAYLOAD, status=200)
+        m.get(f"{BASE}/api/clan/Meowers", payload=CLAN_PAYLOAD, status=200)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
-            clan = await client.get_clan("awesomesam")
+            clan = await client.get_clan("Meowers")
 
     assert isinstance(clan, Clan)
-    assert clan.name == "awesomesam"
+    assert clan.name == "Meowers"
     assert clan.member_count == 1
     assert clan.leader is not None
-    assert clan.leader.user_name == "AwesomeSam"
+    assert clan.leader.user_name == "BOTTOM"
 
 
 @pytest.mark.asyncio
@@ -160,7 +160,7 @@ async def test_get_user_inventory():
     with aioresponses() as m:
         m.post(f"{BASE}/api/inventory/user", payload=payload, status=201)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
-            inv = await client.get_user_inventory("AWSOME")
+            inv = await client.get_user_inventory("BOTTOM")
     
     assert len(inv) == 1
     assert inv[0].name == "Cool Gun"
@@ -269,10 +269,10 @@ async def test_caching():
         # Mock the request once, but set repeat=True to avoid potential mock-exhausted errors
         m.post(f"{BASE}/api/user/getProfile", payload=USER_PAYLOAD, status=201, repeat=True)
         async with KirkaClient(API_KEY, cache_ttl=60) as client:
-            user1 = await client.get_user("AWSOME")
+            user1 = await client.get_user("BOTTOM")
             assert len(client._cache._store) == 1
             # Second call — should come from cache
-            user2 = await client.get_user("AWSOME")
+            user2 = await client.get_user("BOTTOM")
 
     assert user1.id == user2.id
 
@@ -284,4 +284,4 @@ async def test_rate_limit_raises():
         m.post(f"{BASE}/api/user/getProfile", status=429)
         async with KirkaClient(API_KEY, cache_ttl=0, retry_on_rate_limit=False) as client:
             with pytest.raises(RateLimitError):
-                await client.get_user("AWSOME")
+                await client.get_user("BOTTOM")

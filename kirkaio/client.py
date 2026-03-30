@@ -37,7 +37,7 @@ class KirkaClient:
     Usage::
 
         async with KirkaClient(api_key="YOUR_KEY") as client:
-            user = await client.get_user("AWSOME")
+            user = await client.get_user("BOTTOM")
             print(user.name, user.stats.kd_ratio)
 
     Parameters
@@ -177,7 +177,7 @@ class KirkaClient:
         Parameters
         ----------
         id:
-            The player's shortId (e.g. "AWSOME") or UUID.
+            The player's shortId (e.g. "BOTTOM") or UUID.
         is_short_id:
             Set to False if passing a UUID. Defaults to True.
         
@@ -339,7 +339,7 @@ class KirkaClient:
         Parameters
         ----------
         name:
-            The clan's name (e.g. "awesomesam").
+            The clan's name (e.g. "Meowers").
 
         Returns
         -------
