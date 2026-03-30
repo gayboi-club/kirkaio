@@ -10,7 +10,7 @@ async def test_live():
         print("Error: KIRKA_API_KEY not found in .env")
         return
 
-    user_ids = ["#BOTTOM", "BOTTOM"]
+    user_ids = ["#bottom", "bottom", "BOTTOM"]
     clan_name = "Meowers"
 
     async with KirkaClient(api_key) as client:

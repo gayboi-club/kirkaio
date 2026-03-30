@@ -181,11 +181,12 @@ class KirkaClient:
         is_short_id:
             Set to False if passing a UUID. Defaults to True.
         
-        Returns
-        -------
         User:
             The user's profile data.
         """
+        if is_short_id:
+            id = id.lstrip("#").upper()
+
         data = await self._request(
             "POST",
             "/api/user/getProfile",
@@ -232,11 +233,12 @@ class KirkaClient:
         is_short_id:
             Set to False if passing a UUID. Defaults to True.
 
-        Returns
-        -------
         list[InventoryItem]:
             A list of items owned by the user.
         """
+        if is_short_id:
+            id = id.lstrip("#").upper()
+
         data = await self._request(
             "POST",
             "/api/inventory/user",

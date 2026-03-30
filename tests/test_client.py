@@ -88,3 +88,29 @@ async def test_cache_management():
         await client._cache.set("test-key", {"data": "value"})
         await client.clear_cache()
         assert await client._cache.get("test-key") is None
+
+
+@pytest.mark.asyncio
+async def test_get_user_normalization():
+    """Test that ID is normalized (stripped # and uppercased) in get_user."""
+    mock_resp = {
+        "id": "uuid-123", "shortId": "BOTTOM", "name": "GlitchysBottom", "role": "USER", 
+        "level": 1, "klo": 0, "kloRanked": 0, "kloSAD": 0, "klo1V1": 0, "klo2V2": 0,
+        "totalXp": 0, "xpSinceLastLevel": 0, "xpUntilNextLevel": 100, "coins": 0, "diamonds": 0,
+        "createdAt": "2021-01-01T00:00:00Z",
+        "stats": {"games": 0, "wins": 0, "kills": 0, "deaths": 0, "headshots": 0, "scores": 0}
+    }
+    
+    with aioresponses() as m:
+        # Mocking the POST call twice
+        m.post(f"{BASE}/api/user/getProfile", payload=mock_resp)
+        m.post(f"{BASE}/api/user/getProfile", payload=mock_resp)
+
+        async with KirkaClient("test-key") as client:
+            # Case 1: # prefix
+            user = await client.get_user("#bottom")
+            assert user.name == "GlitchysBottom"
+            
+            # Case 2: lowercase
+            user = await client.get_user("bottom")
+            assert user.name == "GlitchysBottom"
