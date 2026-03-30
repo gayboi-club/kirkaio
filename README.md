@@ -120,4 +120,4 @@ async with KirkaClient("...") as client:
 ## License
 
 This project is licensed under the MIT License :3
-See the [LICENSE](LICENSE) file for details.
+See the [LICENSE](LICENSE) file for details :P
