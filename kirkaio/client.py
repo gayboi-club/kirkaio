@@ -26,6 +26,7 @@ from .models import (
 )
 
 BASE_URL = "https://api.kirka.io"
+MAX_ATTEMPTS = 2
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +119,7 @@ class KirkaClient:
         url = f"{BASE_URL}{path}"
 
         data: Any = None
-        for attempt in range(2):
+        for attempt in range(MAX_ATTEMPTS):
             async with session.request(method, url, headers=self._headers, json=json) as resp:
                 if resp.status == 429 and self._retry_on_rate_limit and attempt == 0:
                     retry_after = float(resp.headers.get("Retry-After", 5))
