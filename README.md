@@ -2,7 +2,7 @@
 
 Async Python client for the [Kirka](https://kirka.io) Public API.
 
-Made by fags inc. for the kirka.io community :3
+Made by gayboi.club for the kirka.io community :3
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/fags-inc/kirkaio/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://pyproject.toml)
