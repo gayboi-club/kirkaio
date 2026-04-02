@@ -24,7 +24,7 @@ async def monitor_clan(clan_name: str):
         for m in top_members[:5]:
             print(f"{m.user_name} - {m.month_scores} monthly pts")
 
-asyncio.run(monitor_clan("Squirt"))
+asyncio.run(monitor_clan("gaycats"))
 ```
 
 ---
