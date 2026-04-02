@@ -124,6 +124,26 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+### Raw Message Handler
+
+You can also hook into **every** raw websocket message for logging, analytics, or custom packet handling:
+
+```python
+import asyncio
+from kirkaio import KirkaChatBot
+
+async def on_raw_message(data, ws):
+    print(f"Received packet type: {data.get('type')}")
+
+async def main():
+    bot = KirkaChatBot("your_token", "your_refresh_token")
+    bot.set_raw_handler(on_raw_message)
+    await bot.listen()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
 ## Error Handling
 
 ```python

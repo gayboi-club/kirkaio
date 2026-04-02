@@ -38,8 +38,26 @@ An experimental feature that connects to the Kirka global chat via websockets.
 
 #### Methods
 *   `add_command(name, handler)`: Registers a command. Handlers can be sync or async and receive a dictionary of the packet data.
+*   `set_raw_handler(handler)`: Registers a handler that receives **every** parsed JSON message from the websocket. The handler receives `(data, ws)` — the parsed JSON payload and the active `aiohttp.ClientWebSocketResponse`. Can be sync or async.
 *   `send_message(message)`: Asynchronously sends a text message directly to the global chat.
 *   `listen()`: Coroutine that starts the websocket connection and blocks while listening for events.
+
+#### Raw Message Handler
+
+The raw handler is called for every JSON message received over the websocket, **before** commands are processed. This is useful for logging, analytics, or handling custom packet types beyond type 2 (chat messages).
+
+```python
+async def my_raw_handler(data, ws):
+    """
+    data: the parsed JSON object (dict, list, etc.)
+    ws:   the active aiohttp.ClientWebSocketResponse
+    """
+    print(f"Packet type: {data.get('type')}")
+
+bot.set_raw_handler(my_raw_handler)
+```
+
+> **Note:** Exceptions inside the raw handler are caught and logged, they will not crash the bot or disconnect the websocket.
 
 ---
 
