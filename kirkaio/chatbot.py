@@ -13,7 +13,7 @@ class KirkaChatBot:
     A global chat bot for Kirka.io.
     Warning: Using this may lead to your account being banned. Use at your own risk.
     """
-    def __init__(self, token: str, refresh_token: str, commands: Optional[Dict[str, Callable]] = None, creds_file: str = "creds.json"):
+    def __init__(self, token: str = "", refresh_token: str = "", commands: Optional[Dict[str, Callable]] = None, creds_file: str = "creds.json"):
         self.uri = "wss://chat.kirka.io"
         self.token_url = "https://login.xsolla.com/api/oauth2/token"
         self.token = token
