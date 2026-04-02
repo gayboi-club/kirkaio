@@ -38,6 +38,12 @@ async def main():
         for i, entry in enumerate(lb.results[:5], 1):
             print(f"#{i} {entry.name} - {entry.scores} pts")
 
+        # Quests
+        quests = await client.get_quests()
+        if quests:
+            print(f"Active quests: {len(quests)}")
+            print(f"First quest: {quests[0].name} ({quests[0].rarity})")
+
 if __name__ == "__main__":
     asyncio.run(main())
 ```
