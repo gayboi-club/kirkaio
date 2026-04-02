@@ -19,6 +19,7 @@ class KirkaChatBot:
         self.refresh_token = refresh_token
         self.commands = commands or {}
         self.creds_file = creds_file
+        self.raw_handler: Optional[Callable] = None
         self.session: Optional[aiohttp.ClientSession] = None
         self.ws: Optional[aiohttp.ClientWebSocketResponse] = None
     
@@ -93,6 +94,10 @@ class KirkaChatBot:
         """Register a command handler."""
         self.commands[name] = handler
 
+    def set_raw_handler(self, handler: Union[Callable[[Any, aiohttp.ClientWebSocketResponse], None], Callable[[Any, aiohttp.ClientWebSocketResponse], Awaitable[None]]]) -> None:
+        """Register a handler for all raw JSON messages received."""
+        self.raw_handler = handler
+
     async def send_message(self, message: str) -> None:
         """Send a message to the global chat."""
         if self.ws and not self.ws.closed:
@@ -121,6 +126,14 @@ class KirkaChatBot:
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
                                     data = json.loads(msg.data)
+                                    if getattr(self, "raw_handler", None):
+                                        try:
+                                            res = self.raw_handler(data, ws)
+                                            if asyncio.iscoroutine(res):
+                                                await res
+                                        except Exception as e:
+                                            log.error(f"Raw handler error: {e}")
+                                            
                                     if isinstance(data, dict) and data.get("type") == 2:
                                         await self._handle_type_2(data, ws)
                                 except json.JSONDecodeError:

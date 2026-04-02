@@ -32,7 +32,7 @@ from .models import (
     WeaponSkin,
 )
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __all__ = [
     "KirkaClient",
     "KirkaChatBot",
