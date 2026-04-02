@@ -1,6 +1,6 @@
 # kirkaio - Examples
 
-This file provides advanced examples for using `kirkaio` in common development scenarios.
+This file provides practical examples of how to use `kirkaio` in your projects.
 
 ---
 
@@ -29,7 +29,7 @@ asyncio.run(monitor_clan("Meowers"))
 
 ---
 
-## 2. Advanced Caching Strategy
+## 2. Scheduled Caching
 
 Using the cache to minimize API calls for a periodic task.
 
@@ -104,4 +104,62 @@ async def lookup_safely(short_id: str):
             print(f"Player '{short_id}' could not be found.")
 
 asyncio.run(lookup_safely("NON_EXISTENT_PLAYER"))
+```
+
+---
+
+## 5. Global Chat Bot (Experimental)
+
+This script demonstrates how to connect to the global chat and listen for a `=stats <username>` command. It uses the standard `KirkaClient` to quickly fetch and reply with a player's statistics.
+
+> [!WARNING]
+> This is an experimental feature and violates the Kirka Terms of Service, which could result in an account ban. We do not condone the use of this feature, use it at your own risk.
+
+```python
+import asyncio
+from kirkaio import KirkaClient, KirkaChatBot, NotFoundError
+
+async def greet_when_ready(bot):
+    # Wait until the websocket is populated and open
+    while not bot.ws or bot.ws.closed:
+        await asyncio.sleep(0.5)
+        
+    await bot.send_message("Bot connected and ready... Hello global chat!")
+
+async def start_chatbot():
+    # You can supply either an explicit access 'token' or a 'refresh_token'
+    bot = KirkaChatBot(token="YOUR_ACCESS_TOKEN", refresh_token="")
+    
+    # We will share the standard KirkaClient to fetch data concurrently
+    client = KirkaClient(api_key="YOUR_API_KEY")
+    
+    # Asynchronous command handler for "=" commands
+    async def stats_command(packet):
+        msg = packet.get("message", "")
+        parts = msg[1:].split(maxsplit=1)
+        
+        if len(parts) < 2:
+            return "Provide a username: =stats <user>"
+            
+        username = parts[1]
+        try:
+            # Query the user profile on demand and respond in chat
+            user = await client.get_user(username)
+            return f"{user.name} - Lvl {user.level} (K/D: {user.stats.kd_ratio})"
+        except NotFoundError:
+            return f"User '{username}' not found."
+        except Exception:
+            return "API Error occurred while fetching user."
+            
+    bot.add_command("stats", stats_command)
+    
+    # Run the listener and the greeting task concurrently
+    await asyncio.gather(
+        bot.listen(),
+        greet_when_ready(bot)
+    )
+    
+    await client.close()
+
+asyncio.run(start_chatbot())
 ```

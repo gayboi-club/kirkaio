@@ -2,6 +2,7 @@
 kirkaio - async Python client for the Kirka Public API.
 """
 
+from .chatbot import KirkaChatBot
 from .client import KirkaClient
 from .exceptions import (
     AuthenticationError,
@@ -31,9 +32,10 @@ from .models import (
     WeaponSkin,
 )
 
-__version__ = "0.1.0"
+__version__ = "1.1.0"
 __all__ = [
     "KirkaClient",
+    "KirkaChatBot",
     # Exceptions
     "KirkaError",
     "AuthenticationError",

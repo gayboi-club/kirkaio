@@ -23,6 +23,24 @@ async with KirkaClient("YOUR_API_KEY") as client:
     pass
 ```
 
+### chatbot.KirkaChatBot
+
+An experimental feature that connects to the Kirka global chat via websockets.
+
+> [!WARNING]
+> Using an automated bot in the Kirka global chat is against Kirka's Terms of Service and could result in an account ban. We do not condone the use of this feature, use it at your own risk.
+
+#### Parameters
+*   `token` (str): Your Kirka authentication token (JWT access token or blank if using refresh token).
+*   `refresh_token` (str): Your Kirka refresh token to pull a new session (can be blank if using a raw access token).
+*   `commands` (dict, optional): A dictionary mapping command strings (invoked via `=command`) to handlers.
+*   `creds_file` (str, optional): The path to the file to persist token refresh updates. Defaults to "creds.json".
+
+#### Methods
+*   `add_command(name, handler)`: Registers a command. Handlers can be sync or async and receive a dictionary of the packet data.
+*   `send_message(message)`: Asynchronously sends a text message directly to the global chat.
+*   `listen()`: Coroutine that starts the websocket connection and blocks while listening for events.
+
 ---
 
 ## Data Models
@@ -86,7 +104,7 @@ await client.invalidate("user:BOTTOM")
 
 ---
 
-## Advanced Usage
+## Other Use Cases
 
 ### Reusing a Session
 

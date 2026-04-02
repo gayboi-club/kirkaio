@@ -58,6 +58,7 @@ export KIRKA_API_KEY="your_key_here"
 - TTL caching - avoid redundant requests (configurable, default 60s).
 - Rate limit handling - auto-retry with Retry-After back-off.
 - CLI tool - quick lookups straight from your terminal :3
+- **Global Chat Bot** - experimental websocket listener for the global chat.
 
 ## Client Options
 
@@ -100,6 +101,28 @@ kirkaio quests --type event
 | `get_ranked_1v1_leaderboard()` | Ranked 1v1 leaderboard |
 | `get_ranked_2v2_leaderboard()` | Ranked 2v2 leaderboard |
 | `get_clan(name)` | Clan details + members |
+
+## Global Chat Bot (Experimental)
+
+> [!WARNING]
+> Using an automated bot in the Kirka global chat **is against Kirka's Terms of Service and could result in an account ban**. We do not condone the use of this feature, use it at your own risk.
+
+```python
+import asyncio
+from kirkaio import KirkaChatBot
+
+async def main():
+    def ping_handler(packet):
+        return "Pong!"
+        
+    bot = KirkaChatBot("your_token", "your_refresh_token")
+    bot.add_command("ping", ping_handler)
+    
+    await bot.listen()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
 
 ## Error Handling
 

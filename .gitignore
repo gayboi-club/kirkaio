@@ -147,3 +147,6 @@ cython_debug/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Temporary directories
+tmp/
