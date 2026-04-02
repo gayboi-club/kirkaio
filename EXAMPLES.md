@@ -24,7 +24,7 @@ async def monitor_clan(clan_name: str):
         for m in top_members[:5]:
             print(f"{m.user_name} - {m.month_scores} monthly pts")
 
-asyncio.run(monitor_clan("Meowers"))
+asyncio.run(monitor_clan("Squirt"))
 ```
 
 ---
@@ -162,4 +162,53 @@ async def start_chatbot():
     await client.close()
 
 asyncio.run(start_chatbot())
+```
+
+---
+
+## 6. Fetching Active Quests
+
+Retrieve all current quests and display their rewards. You can also filter by type (e.g. `"event"`) to focus on a specific category.
+
+```python
+import asyncio
+from kirkaio import KirkaClient
+
+async def show_quests():
+    async with KirkaClient("YOUR_API_KEY") as client:
+        # Fetch all active quests
+        quests = await client.get_quests()
+
+        if not quests:
+            print("No active quests right now.")
+            return
+
+        print(f"Active quests ({len(quests)}):")
+        print("-" * 40)
+        for q in quests:
+            reward_summary = ", ".join(
+                f"{r.amount}x {r.type}" for r in q.rewards
+            ) or "No rewards"
+            weapon_note = f" [{q.weapon}]" if q.weapon else ""
+            print(f"[{q.rarity.upper()}] {q.name}{weapon_note}")
+            print(f"  Goal: {q.amount} | Expires: {q.ended_at.strftime('%Y-%m-%d')}")
+            print(f"  Rewards: {reward_summary}")
+
+asyncio.run(show_quests())
+```
+
+### Filtering by quest type
+
+```python
+import asyncio
+from kirkaio import KirkaClient
+
+async def show_event_quests():
+    async with KirkaClient("YOUR_API_KEY") as client:
+        event_quests = await client.get_quests(type="event")
+        print(f"Event quests: {len(event_quests)}")
+        for q in event_quests:
+            print(f"  • {q.name} — {q.rarity} (ends {q.ended_at.date()})")
+
+asyncio.run(show_event_quests())
 ```

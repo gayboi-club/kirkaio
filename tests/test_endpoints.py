@@ -264,6 +264,116 @@ async def test_get_quests():
 
 
 @pytest.mark.asyncio
+async def test_get_quests_with_type_filter():
+    """Passing a type string sends it as the JSON body and returns filtered quests."""
+    with aioresponses() as m:
+        m.post(f"{BASE}/api/quests", payload=QUEST_PAYLOAD, status=201)
+        async with KirkaClient(API_KEY, cache_ttl=0) as client:
+            quests = await client.get_quests(type="event")
+
+    assert len(quests) == 1
+    assert quests[0].type == "event"
+
+
+@pytest.mark.asyncio
+async def test_get_quests_empty_list():
+    """API may return an empty list when there are no active quests."""
+    with aioresponses() as m:
+        m.post(f"{BASE}/api/quests", payload=[], status=201)
+        async with KirkaClient(API_KEY, cache_ttl=0) as client:
+            quests = await client.get_quests()
+
+    assert quests == []
+
+
+@pytest.mark.asyncio
+async def test_get_quests_no_weapon():
+    """Quests without a weapon field should parse correctly with weapon=None."""
+    payload = [
+        {
+            "id": "aabbccdd-0000-0000-0000-000000000001",
+            "type": "daily",
+            "name": "PLAY_GAMES",
+            "amount": 5,
+            "endedAt": "2026-04-10T00:00:00.000Z",
+            "rarity": "common",
+            "rewards": [],
+            "progress": {"amount": 2, "completed": False, "completedDone": False, "rewardTaken": False},
+        }
+    ]
+    with aioresponses() as m:
+        m.post(f"{BASE}/api/quests", payload=payload, status=201)
+        async with KirkaClient(API_KEY, cache_ttl=0) as client:
+            quests = await client.get_quests()
+
+    assert quests[0].weapon is None
+    assert quests[0].name == "PLAY_GAMES"
+    assert quests[0].rewards == []
+    assert quests[0].progress.amount == 2
+
+
+@pytest.mark.asyncio
+async def test_get_quests_coin_reward():
+    """Quest rewards with type COINS are parsed correctly."""
+    quest = QUEST_PAYLOAD[0]
+    with aioresponses() as m:
+        m.post(f"{BASE}/api/quests", payload=[quest], status=201)
+        async with KirkaClient(API_KEY, cache_ttl=0) as client:
+            quests = await client.get_quests()
+
+    reward = quests[0].rewards[0]
+    assert reward.type == "COINS"
+    assert reward.amount == 500
+    assert reward.item is None
+
+
+@pytest.mark.asyncio
+async def test_get_quests_auth_error():
+    """401 from the quests endpoint should raise AuthenticationError."""
+    with aioresponses() as m:
+        m.post(
+            f"{BASE}/api/quests",
+            payload={"statusCode": 401, "message": "Missing ApiKey header"},
+            status=401,
+        )
+        async with KirkaClient("bad-key", cache_ttl=0) as client:
+            with pytest.raises(AuthenticationError):
+                await client.get_quests()
+
+
+@pytest.mark.asyncio
+async def test_get_quests_validation_error():
+    """400 from the quests endpoint should raise ValidationError."""
+    from kirkaio import ValidationError
+
+    with aioresponses() as m:
+        m.post(
+            f"{BASE}/api/quests",
+            payload={"message": "Invalid quest type"},
+            status=400,
+        )
+        async with KirkaClient(API_KEY, cache_ttl=0) as client:
+            with pytest.raises(ValidationError):
+                await client.get_quests(type="__bad__")
+
+
+@pytest.mark.asyncio
+async def test_get_quests_cache_key_segregation():
+    """Typed and untyped quest calls should use separate cache keys."""
+    with aioresponses() as m:
+        # Two distinct HTTP calls, each cached independently
+        m.post(f"{BASE}/api/quests", payload=QUEST_PAYLOAD, status=201)
+        m.post(f"{BASE}/api/quests", payload=[], status=201)
+        async with KirkaClient(API_KEY, cache_ttl=60) as client:
+            all_quests = await client.get_quests()
+            event_quests = await client.get_quests(type="daily")
+
+    # Different cache keys — different results
+    assert len(all_quests) == 1
+    assert len(event_quests) == 0
+
+
+@pytest.mark.asyncio
 async def test_caching():
     with aioresponses() as m:
         # Mock the request once, but set repeat=True to avoid potential mock-exhausted errors

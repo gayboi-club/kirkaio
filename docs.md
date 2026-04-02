@@ -92,7 +92,73 @@ A unified model for various rankings.
 *   `remaining_time` (int): Seconds until the current leaderboard cycle ends.
 *   `rewards` (dict): Configured rewards for the cycle.
 
+### Quest
+
+Represents a single active quest returned by `get_quests()`.
+
+*   `id` (str): Unique UUID of the quest.
+*   `type` (str): Quest category, e.g. `"event"`, `"daily"`, `"weekly"`.
+*   `name` (str): Internal quest name, e.g. `"KILLS_WITH_GUN"`.
+*   `weapon` (str | None): Required weapon slug, or `None` if any weapon is accepted.
+*   `amount` (int): Target count to complete the quest.
+*   `ended_at` (datetime): Expiry timestamp (timezone-aware UTC).
+*   `rarity` (str): Quest rarity tier, e.g. `"legendary"`, `"common"`.
+*   `rewards` (list[Reward]): Rewards granted upon completion.
+*   `progress` (QuestProgress): Snapshot of player progress (public API always returns zeroed-out values).
+
+### QuestProgress
+
+Progress snapshot attached to each `Quest`.
+
+*   `amount` (int): Progress toward `quest.amount`.
+*   `completed` (bool): Whether the quest objective was reached.
+*   `completed_done` (bool): Whether completion was acknowledged server-side.
+*   `reward_taken` (bool): Whether the reward was claimed.
+
+> **Note:** Per the Kirka Public API spec, user-auth progress is intentionally omitted. All progress values are zeroed-out placeholders in public responses.
+
+### Reward
+
+A reward granted for completing a quest (or leaderboard placement).
+
+*   `id` (str): Unique UUID of the reward entry.
+*   `type` (str): Reward type, e.g. `"COINS"`, `"ITEM"`.
+*   `amount` (int): Quantity of the reward.
+*   `item` (RewardItem | None): Item detail, only set when `type == "ITEM"`.
+
+### RewardItem
+
+The cosmetic item attached to an item-type `Reward`.
+
+*   `id` (str): Item UUID.
+*   `type` (str): Item category, e.g. `"WEAPON"`, `"BODY"`.
+*   `rarity` (str): Item rarity.
+*   `name` (str): Display name of the item.
+*   `parent` (dict | None): Parent item metadata, if applicable.
+
 ---
+
+## Methods
+
+### `get_quests(type=None)` → `list[Quest]`
+
+Fetches currently active quests.
+
+```python
+async with KirkaClient("YOUR_API_KEY") as client:
+    quests = await client.get_quests()
+    for q in quests:
+        print(q.name, q.rarity, q.ended_at)
+```
+
+**Parameters**
+*   `type` (str, optional): Filter by quest category (e.g. `"event"`, `"daily"`). Omit to fetch all active quests.
+
+**Returns** — `list[Quest]`: A list of active quest objects. Returns an empty list if no quests are currently active.
+
+**Errors** — `AuthenticationError`, `ValidationError`, `RateLimitError`, `RouteDisabledError`, `ServerError`
+
+
 
 ## Error Handling
 
