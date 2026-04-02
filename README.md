@@ -150,6 +150,34 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+### On Connect Handler
+
+You can also run logic immediately after the bot successfully connects to the WebSocket server using `set_on_connect`:
+
+```python
+import asyncio
+from kirkaio import KirkaChatBot
+
+async def on_connect(ws):
+    print("Successfully connected to the Kirka chat server!")
+    # Send an initial message
+    await ws.send_str("Hello World!")
+
+async def main():
+    bot = KirkaChatBot("your_token", "your_refresh_token")
+    bot.set_on_connect(on_connect)
+    await bot.listen()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Credentials Recovery
+
+By default, `KirkaChatBot` saves its tokens to `creds.json` whenever it refreshes them. 
+Upon starting, the bot will automatically read `creds.json` (if it exists) to securely load the newest valid tokens, preventing authentication mismatches and disconnects on startup.
+You can change the credentials file name by passing `creds_file="my_creds.json"` during initialization.
+
 ## Error Handling
 
 ```python

@@ -119,19 +119,20 @@ This script demonstrates how to connect to the global chat and listen for a `=st
 import asyncio
 from kirkaio import KirkaClient, KirkaChatBot, NotFoundError
 
-async def greet_when_ready(bot):
-    # Wait until the websocket is populated and open
-    while not bot.ws or bot.ws.closed:
-        await asyncio.sleep(0.5)
-        
-    await bot.send_message("Bot connected and ready... Hello global chat!")
-
 async def start_chatbot():
-    # You can supply either an explicit access 'token' or a 'refresh_token'
+    # You can supply either an explicit access 'token' or a 'refresh_token'.
+    # If creds.json exists, the tokens inside it will override these automatically.
     bot = KirkaChatBot(token="YOUR_ACCESS_TOKEN", refresh_token="")
     
     # We will share the standard KirkaClient to fetch data concurrently
     client = KirkaClient(api_key="YOUR_API_KEY")
+
+    # Hook triggered when the bot successfully connects
+    async def on_connect(ws):
+        print("Connected to chat!")
+        await ws.send_str("Bot connected and ready... Hello global chat!")
+        
+    bot.set_on_connect(on_connect)
     
     # Asynchronous command handler for "=" commands
     async def stats_command(packet):
@@ -153,13 +154,15 @@ async def start_chatbot():
             
     bot.add_command("stats", stats_command)
     
-    # Run the listener and the greeting task concurrently
-    await asyncio.gather(
-        bot.listen(),
-        greet_when_ready(bot)
-    )
+    # Run the listener
+    listen_task = asyncio.create_task(bot.listen())
     
-    await client.close()
+    try:
+        await listen_task
+    except asyncio.CancelledError:
+        pass
+    finally:
+        await client.close()
 
 asyncio.run(start_chatbot())
 ```

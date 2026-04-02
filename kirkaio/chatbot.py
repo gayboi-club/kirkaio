@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 from typing import Callable, Dict, Any, Optional, Awaitable, Union
 
 import aiohttp
@@ -20,8 +21,20 @@ class KirkaChatBot:
         self.commands = commands or {}
         self.creds_file = creds_file
         self.raw_handler: Optional[Callable] = None
+        self.on_connect_handler: Optional[Callable] = None
         self.session: Optional[aiohttp.ClientSession] = None
         self.ws: Optional[aiohttp.ClientWebSocketResponse] = None
+
+        if os.path.exists(self.creds_file):
+            try:
+                with open(self.creds_file, "r") as f:
+                    data = json.load(f)
+                    if "token" in data:
+                        self.token = data["token"]
+                    if "refresh_token" in data:
+                        self.refresh_token = data["refresh_token"]
+            except Exception as e:
+                log.warning(f"Could not load credentials from {self.creds_file}: {e}")
     
     async def _refresh_tokens(self) -> None:
         if not self.session:
@@ -94,6 +107,10 @@ class KirkaChatBot:
         """Register a command handler."""
         self.commands[name] = handler
 
+    def set_on_connect(self, handler: Union[Callable[[aiohttp.ClientWebSocketResponse], None], Callable[[aiohttp.ClientWebSocketResponse], Awaitable[None]]]) -> None:
+        """Register a handler for when the bot connects to the server."""
+        self.on_connect_handler = handler
+
     def set_raw_handler(self, handler: Union[Callable[[Any, aiohttp.ClientWebSocketResponse], None], Callable[[Any, aiohttp.ClientWebSocketResponse], Awaitable[None]]]) -> None:
         """Register a handler for all raw JSON messages received."""
         self.raw_handler = handler
@@ -121,6 +138,14 @@ class KirkaChatBot:
                     ) as ws:
                         self.ws = ws
                         log.info("Connected to chat")
+                        
+                        if getattr(self, "on_connect_handler", None):
+                            try:
+                                res = self.on_connect_handler(ws)
+                                if asyncio.iscoroutine(res):
+                                    await res
+                            except Exception as e:
+                                log.error(f"On connect handler error: {e}")
                         
                         async for msg in ws:
                             if msg.type == aiohttp.WSMsgType.TEXT:
