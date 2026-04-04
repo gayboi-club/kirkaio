@@ -58,7 +58,7 @@ CLAN_PAYLOAD = {
         {
             "user": {
                 "id": "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a",
-                "name": "GlitchysBottom",
+                "name": "BOTTOM",
                 "shortId": "BOTTOM",
                 "level": 20,
             },
