@@ -1,10 +1,11 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Optional
-from datetime import datetime
 
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
 
 # ─── Shared ───────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class RewardItem:
@@ -29,6 +30,7 @@ class Reward:
 
 
 # ─── User ─────────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class WeaponSkin:
@@ -58,7 +60,9 @@ class BodySkin:
 
     @classmethod
     def from_dict(cls, data: dict) -> "BodySkin":
-        return cls(id=data["id"], type=data["type"], rarity=data["rarity"], name=data["name"])
+        return cls(
+            id=data["id"], type=data["type"], rarity=data["rarity"], name=data["name"]
+        )
 
 
 @dataclass
@@ -66,6 +70,7 @@ class UserStats:
     """
     Performance statistics for a Kirka player.
     """
+
     games: int
     wins: int
     kills: int
@@ -98,6 +103,7 @@ class User:
     """
     Represents a full Kirka public user profile.
     """
+
     id: str
     short_id: str
     name: str
@@ -141,13 +147,18 @@ class User:
             diamonds=data["diamonds"],
             created_at=datetime.fromisoformat(data["createdAt"].replace("Z", "+00:00")),
             clan=data.get("clan"),
-            active_weapon_skin=WeaponSkin.from_dict(data["activeWeapon1Skin"]) if data.get("activeWeapon1Skin") else None,
-            active_body_skin=BodySkin.from_dict(data["activeBodySkin"]) if data.get("activeBodySkin") else None,
+            active_weapon_skin=WeaponSkin.from_dict(data["activeWeapon1Skin"])
+            if data.get("activeWeapon1Skin")
+            else None,
+            active_body_skin=BodySkin.from_dict(data["activeBodySkin"])
+            if data.get("activeBodySkin")
+            else None,
             stats=UserStats.from_dict(data["stats"]),
         )
 
 
 # ─── Inventory ────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class InventoryItem:
@@ -183,7 +194,9 @@ class InventoryItem:
             amount=data["amount"],
             market=data["market"],
             is_selected=data["isSelected"],
-            acquired_at=datetime.fromisoformat(data["createdAt"].replace("Z", "+00:00")),
+            acquired_at=datetime.fromisoformat(
+                data["createdAt"].replace("Z", "+00:00")
+            ),
         )
 
 
@@ -217,6 +230,7 @@ class PublicItem:
 
 
 # ─── Quests ───────────────────────────────────────────────────────────────────
+
 
 @dataclass
 class QuestProgress:
@@ -264,6 +278,7 @@ class Quest:
 
 # ─── Leaderboard ──────────────────────────────────────────────────────────────
 
+
 @dataclass
 class SoloLeaderboardEntry:
     user_id: str
@@ -302,15 +317,33 @@ class RankedLeaderboardEntry:
 
     @classmethod
     def from_sad(cls, data: dict) -> "RankedLeaderboardEntry":
-        return cls(id=data["id"], short_id=data["shortId"], role=data["role"], name=data["name"], klo=data["kloSAD"])
+        return cls(
+            id=data["id"],
+            short_id=data["shortId"],
+            role=data["role"],
+            name=data["name"],
+            klo=data["kloSAD"],
+        )
 
     @classmethod
     def from_1v1(cls, data: dict) -> "RankedLeaderboardEntry":
-        return cls(id=data["id"], short_id=data["shortId"], role=data["role"], name=data["name"], klo=data["klo1V1"])
+        return cls(
+            id=data["id"],
+            short_id=data["shortId"],
+            role=data["role"],
+            name=data["name"],
+            klo=data["klo1V1"],
+        )
 
     @classmethod
     def from_2v2(cls, data: dict) -> "RankedLeaderboardEntry":
-        return cls(id=data["id"], short_id=data["shortId"], role=data["role"], name=data["name"], klo=data["klo2V2"])
+        return cls(
+            id=data["id"],
+            short_id=data["shortId"],
+            role=data["role"],
+            name=data["name"],
+            klo=data["klo2V2"],
+        )
 
 
 @dataclass
@@ -323,9 +356,11 @@ class Leaderboard:
 
 # ─── Clan ─────────────────────────────────────────────────────────────────────
 
+
 @dataclass
 class ClanMember:
     user_id: str
+    short_id: str
     user_name: str
     role: str
     all_scores: int
@@ -336,6 +371,7 @@ class ClanMember:
     def from_dict(cls, data: dict) -> "ClanMember":
         return cls(
             user_id=data["user"]["id"],
+            short_id=data["user"]["shortId"],
             user_name=data["user"]["name"],
             role=data["role"],
             all_scores=data["allScores"],
@@ -349,6 +385,7 @@ class Clan:
     """
     Represents a Kirka clan and its members.
     """
+
     id: str
     name: str
     description: Optional[str]
