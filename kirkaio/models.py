@@ -361,6 +361,7 @@ class Leaderboard:
 class ClanMember:
     user_id: str
     short_id: str
+    user_level: int
     user_name: str
     role: str
     all_scores: int
@@ -373,6 +374,7 @@ class ClanMember:
             user_id=data["user"]["id"],
             short_id=data["user"]["shortId"],
             user_name=data["user"]["name"],
+            user_level=data["user"]["level"],
             role=data["role"],
             all_scores=data["allScores"],
             month_scores=data["monthScores"],

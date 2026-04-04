@@ -5,8 +5,9 @@ Run with: pytest tests/
 
 import pytest
 from aioresponses import aioresponses
-from kirkaio import KirkaClient, NotFoundError, AuthenticationError, RateLimitError
-from kirkaio.models import User, Clan, Quest, Leaderboard
+
+from kirkaio import AuthenticationError, KirkaClient, NotFoundError, RateLimitError
+from kirkaio.models import Clan, Leaderboard, Quest, User
 
 API_KEY = "test-key"
 BASE = "https://api.kirka.io"
@@ -55,7 +56,12 @@ CLAN_PAYLOAD = {
     "createdAt": "2025-07-16T15:46:48.795Z",
     "members": [
         {
-            "user": {"id": "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a", "name": "BOTTOM"},
+            "user": {
+                "id": "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a",
+                "name": "GlitchysBottom",
+                "shortId": "BOTTOM",
+                "level": 20,
+            },
             "role": "LEADER",
             "allScores": 0,
             "monthScores": 4210,
@@ -80,11 +86,17 @@ QUEST_PAYLOAD = [
         "endedAt": "2026-04-01T00:00:00.000Z",
         "rarity": "legendary",
         "rewards": [{"id": "c5bbd04c", "type": "COINS", "amount": 500, "item": None}],
-        "progress": {"amount": 0, "completed": False, "completedDone": False, "rewardTaken": False},
+        "progress": {
+            "amount": 0,
+            "completed": False,
+            "completedDone": False,
+            "rewardTaken": False,
+        },
     }
 ]
 
 # ─── Tests ────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_get_user_success():
@@ -104,7 +116,11 @@ async def test_get_user_success():
 @pytest.mark.asyncio
 async def test_get_user_not_found():
     with aioresponses() as m:
-        m.post(f"{BASE}/api/user/getProfile", payload={"statusCode": 404, "code": 102}, status=404)
+        m.post(
+            f"{BASE}/api/user/getProfile",
+            payload={"statusCode": 404, "code": 102},
+            status=404,
+        )
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
             with pytest.raises(NotFoundError):
                 await client.get_user("NOBODY")
@@ -161,7 +177,7 @@ async def test_get_user_inventory():
         m.post(f"{BASE}/api/inventory/user", payload=payload, status=201)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
             inv = await client.get_user_inventory("BOTTOM")
-    
+
     assert len(inv) == 1
     assert inv[0].name == "Cool Gun"
     assert inv[0].amount == 1
@@ -185,7 +201,7 @@ async def test_get_all_items():
         m.get(f"{BASE}/api/inventory/items", payload=payload, status=200)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
             items = await client.get_all_items()
-    
+
     assert len(items) == 1
     assert items[0].name == "Cool Gun"
 
@@ -193,7 +209,9 @@ async def test_get_all_items():
 @pytest.mark.asyncio
 async def test_get_clan_leaderboard():
     payload = {
-        "results": [{"clanId": "c1", "name": "Clan1", "membersCount": 10, "scores": 5000}],
+        "results": [
+            {"clanId": "c1", "name": "Clan1", "membersCount": 10, "scores": 5000}
+        ],
         "remainingTime": 3600,
         "rewards": {},
     }
@@ -201,27 +219,42 @@ async def test_get_clan_leaderboard():
         m.get(f"{BASE}/api/leaderboard/clan", payload=payload, status=200)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
             lb = await client.get_clan_leaderboard()
-    
+
     assert len(lb.results) == 1
     assert lb.results[0].name == "Clan1"
 
 
 @pytest.mark.asyncio
 async def test_ranked_leaderboards():
-    sad_payload = {"results": [{"id": "u1", "shortId": "S1", "role": "USER", "name": "N1", "kloSAD": 1500}], "season": "1"}
-    v1_payload = {"results": [{"id": "u2", "shortId": "S2", "role": "USER", "name": "N2", "klo1V1": 1600}], "season": "1"}
-    v2_payload = {"results": [{"id": "u3", "shortId": "S3", "role": "USER", "name": "N3", "klo2V2": 1700}], "season": "1"}
-    
+    sad_payload = {
+        "results": [
+            {"id": "u1", "shortId": "S1", "role": "USER", "name": "N1", "kloSAD": 1500}
+        ],
+        "season": "1",
+    }
+    v1_payload = {
+        "results": [
+            {"id": "u2", "shortId": "S2", "role": "USER", "name": "N2", "klo1V1": 1600}
+        ],
+        "season": "1",
+    }
+    v2_payload = {
+        "results": [
+            {"id": "u3", "shortId": "S3", "role": "USER", "name": "N3", "klo2V2": 1700}
+        ],
+        "season": "1",
+    }
+
     with aioresponses() as m:
         m.get(f"{BASE}/api/leaderboard/rankedSAD", payload=sad_payload, status=200)
         m.get(f"{BASE}/api/leaderboard/ranked1V1", payload=v1_payload, status=200)
         m.get(f"{BASE}/api/leaderboard/ranked2V2", payload=v2_payload, status=200)
-        
+
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
             sad = await client.get_ranked_sad_leaderboard()
             v1 = await client.get_ranked_1v1_leaderboard()
             v2 = await client.get_ranked_2v2_leaderboard()
-            
+
     assert sad.results[0].klo == 1500
     assert v1.results[0].klo == 1600
     assert v2.results[0].klo == 1700
@@ -233,7 +266,9 @@ async def test_get_user_uuid():
     with aioresponses() as m:
         m.post(f"{BASE}/api/user/getProfile", payload=USER_PAYLOAD, status=201)
         async with KirkaClient(API_KEY, cache_ttl=0) as client:
-            user = await client.get_user("9b1e9617-fb0c-48e6-8be0-c49720ad1e7a", is_short_id=False)
+            user = await client.get_user(
+                "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a", is_short_id=False
+            )
     assert user.id == "9b1e9617-fb0c-48e6-8be0-c49720ad1e7a"
 
 
@@ -298,7 +333,12 @@ async def test_get_quests_no_weapon():
             "endedAt": "2026-04-10T00:00:00.000Z",
             "rarity": "common",
             "rewards": [],
-            "progress": {"amount": 2, "completed": False, "completedDone": False, "rewardTaken": False},
+            "progress": {
+                "amount": 2,
+                "completed": False,
+                "completedDone": False,
+                "rewardTaken": False,
+            },
         }
     ]
     with aioresponses() as m:
@@ -377,7 +417,9 @@ async def test_get_quests_cache_key_segregation():
 async def test_caching():
     with aioresponses() as m:
         # Mock the request once, but set repeat=True to avoid potential mock-exhausted errors
-        m.post(f"{BASE}/api/user/getProfile", payload=USER_PAYLOAD, status=201, repeat=True)
+        m.post(
+            f"{BASE}/api/user/getProfile", payload=USER_PAYLOAD, status=201, repeat=True
+        )
         async with KirkaClient(API_KEY, cache_ttl=60) as client:
             user1 = await client.get_user("BOTTOM")
             assert len(client._cache._store) == 1
@@ -392,6 +434,8 @@ async def test_rate_limit_raises():
     with aioresponses() as m:
         m.post(f"{BASE}/api/user/getProfile", status=429)
         m.post(f"{BASE}/api/user/getProfile", status=429)
-        async with KirkaClient(API_KEY, cache_ttl=0, retry_on_rate_limit=False) as client:
+        async with KirkaClient(
+            API_KEY, cache_ttl=0, retry_on_rate_limit=False
+        ) as client:
             with pytest.raises(RateLimitError):
                 await client.get_user("BOTTOM")
