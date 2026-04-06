@@ -99,6 +99,19 @@ class UserStats:
 
 
 @dataclass
+class GlobalChatUser:
+    """
+    Represents a user profile with data in a global chat message
+    """
+
+    id: str
+    short_id: str
+    role: str
+    level: int
+    name: str
+
+
+@dataclass
 class User:
     """
     Represents a full Kirka public user profile.

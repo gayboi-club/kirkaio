@@ -6,7 +6,28 @@ from typing import Any, Awaitable, Callable, Dict, Optional, Union
 
 import aiohttp
 
+from kirkaio.models import GlobalChatUser
+
 log = logging.getLogger(__name__)
+
+
+class Context:
+    def __init__(self, packet: dict, ws: aiohttp.ClientWebSocketResponse):
+        self.raw_packet = packet
+        self.ws = ws
+        self.type: int = packet.get(
+            "type", 0
+        )  # should always be 2 in a command context
+        self.user: GlobalChatUser | None = None
+        usr = packet.get("user")
+        if usr:
+            self.user = GlobalChatUser(
+                id=usr.get("id"),
+                short_id=usr.get("shortId"),
+                name=usr.get("name"),
+                level=usr.get("level"),
+                role=usr.get("role"),
+            )
 
 
 class KirkaChatBot:
@@ -22,6 +43,7 @@ class KirkaChatBot:
         commands: Optional[Dict[str, Callable]] = None,
         creds_file: str = "creds.json",
         prefix: str = "=",
+        skip_token_refresh: bool = False,
     ):
         self.uri = "wss://chat.kirka.io"
         self.token_url = "https://login.xsolla.com/api/oauth2/token"
@@ -30,6 +52,7 @@ class KirkaChatBot:
         self.refresh_token = refresh_token
         self.commands = commands or {}
         self.creds_file = creds_file
+        self.skip_token_refresh = skip_token_refresh
         self.raw_handler: Optional[Callable] = None
         self.on_connect_handler: Optional[Callable] = None
         self.session: Optional[aiohttp.ClientSession] = None
@@ -156,7 +179,7 @@ class KirkaChatBot:
             self.session = session
             while True:  # reconnect loop
                 try:
-                    if not self.token:
+                    if not self.token and not self.skip_token_refresh:
                         log.info("no token, refreshing")
                         await self._refresh_tokens()
 
@@ -167,7 +190,7 @@ class KirkaChatBot:
                         self.ws = ws
                         log.info("Connected to chat")
 
-                        if getattr(self, "on_connect_handler", None):
+                        if self.on_connect_handler:
                             try:
                                 res = self.on_connect_handler(ws)
                                 if asyncio.iscoroutine(res):
@@ -179,7 +202,7 @@ class KirkaChatBot:
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
                                     data = json.loads(msg.data)
-                                    if getattr(self, "raw_handler", None):
+                                    if self.raw_handler:
                                         try:
                                             res = self.raw_handler(data, ws)
                                             if asyncio.iscoroutine(res):
