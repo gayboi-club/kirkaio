@@ -127,7 +127,7 @@ class KirkaChatBot:
         if cmd_name in self.commands:
             try:
                 handler = self.commands[cmd_name]
-                reply = handler(packet)
+                reply = handler(Context(packet, ws))
                 if asyncio.iscoroutine(reply):
                     reply = await reply
 
