@@ -34,8 +34,9 @@ An experimental feature that connects to the Kirka global chat via websockets.
 *   `token` (str): Your Kirka authentication token (JWT access token or blank if using refresh token).
 *   `refresh_token` (str): Your Kirka refresh token to pull a new session (can be blank if using a raw access token).
 *   `commands` (dict, optional): A dictionary mapping command strings (invoked via `=command`) to handlers.
-*   `creds_file` (str, optional): The path to the file to persist token refresh updates. Defaults to "creds.json".
+*   `creds_file` (str, optional, defaults to "creds.json"): The path to the file to persist token refresh updates. Defaults to "creds.json".
 *   `prefix` (str, optional, defaults to "="): The command prefix for the bot.
+*   `skip_token_refresh` (boolean, optional, defaults to False): For debugging, if True then the bot will not attempt to refresh the token and will try to connect directly to the socket.
 
 #### Methods
 *   `add_command(name, handler)`: Registers a command. Handlers can be sync or async and receive a dictionary of the packet data.
