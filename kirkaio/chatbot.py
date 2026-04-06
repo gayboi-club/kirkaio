@@ -18,6 +18,7 @@ class Context:
         self.type: int = packet.get(
             "type", 0
         )  # should always be 2 in a command context
+        self.message: str | None = packet.get("message")
         self.user: GlobalChatUser | None = None
         usr = packet.get("user")
         if usr:
@@ -136,13 +137,7 @@ class KirkaChatBot:
             except Exception as e:
                 log.error(f"Command error: {e}")
 
-    def add_command(
-        self,
-        name: str,
-        handler: Union[
-            Callable[[Dict[str, Any]], str], Callable[[Dict[str, Any]], Awaitable[str]]
-        ],
-    ) -> None:
+    def add_command(self, name: str, handler: Callable) -> None:
         """Register a command handler."""
         self.commands[name] = handler
 

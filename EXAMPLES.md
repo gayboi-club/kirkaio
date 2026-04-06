@@ -135,9 +135,8 @@ async def start_chatbot():
     bot.set_on_connect(on_connect)
     
     # Asynchronous command handler for "=" commands
-    async def stats_command(packet):
-        msg = packet.get("message", "")
-        parts = msg[1:].split(maxsplit=1)
+    async def stats_command(context):
+        parts = context.message[1:].split(maxsplit=1)
         
         if len(parts) < 2:
             return "Provide a username: =stats <user>"
