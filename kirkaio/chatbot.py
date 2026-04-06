@@ -14,10 +14,19 @@ class KirkaChatBot:
     A global chat bot for Kirka.io.
     Warning: Using this may lead to your account being banned. Use at your own risk.
     """
-    def __init__(self, token: str = "", refresh_token: str = "", commands: Optional[Dict[str, Callable]] = None, creds_file: str = "creds.json"):
+
+    def __init__(
+        self,
+        token: str = "",
+        refresh_token: str = "",
+        commands: Optional[Dict[str, Callable]] = None,
+        creds_file: str = "creds.json",
+        prefix: str = "=",
+    ):
         self.uri = "wss://chat.kirka.io"
         self.token_url = "https://login.xsolla.com/api/oauth2/token"
         self.token = token
+        self.prefix = prefix
         self.refresh_token = refresh_token
         self.commands = commands or {}
         self.creds_file = creds_file
@@ -82,10 +91,10 @@ class KirkaChatBot:
         user = packet.get("user", {})
         short_id = user.get("shortId", "ERRROR")
 
-        if not msg.startswith("="):
+        if not msg.startswith(self.prefix):
             return
 
-        parts = msg[1:].split()
+        parts = msg[len(self.prefix) :].split()
         if not parts:
             return
 
